@@ -38,6 +38,7 @@ PREREQ_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'registration',
 ]
 
 PROJECT_APPS = [
@@ -132,3 +133,4 @@ STATICFILES_DIRS = [
 
 # Others
 LOGIN_REDIRECT_URL = '/homepage'
+ACCOUNT_ACTIVATION_DAYS = 2./24
