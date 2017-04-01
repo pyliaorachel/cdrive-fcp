@@ -136,7 +136,10 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
 ]
 
+# Media 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 # Others
 LOGIN_REDIRECT_URL = '/homepage'
 ACCOUNT_ACTIVATION_DAYS = 2./24
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
