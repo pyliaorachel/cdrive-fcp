@@ -30,7 +30,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 PREREQ_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,7 +45,7 @@ PROJECT_APPS = [
     'game.apps.GameConfig',
 ]
 
-INSTALLED_APPS = PREREQ_APPS + PROJECT_APPS
+INSTALLED_APPS = PROJECT_APPS + PREREQ_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,6 +77,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cdrive_fcp.wsgi.application'
 
+# Console Backend
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
