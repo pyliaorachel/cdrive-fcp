@@ -81,11 +81,14 @@ TEMPLATES = [
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 SOCIAL_AUTH_GITHUB_KEY = '6175d6900f94e90f5b2d'
 SOCIAL_AUTH_GITHUB_SECRET = 'abc7913b04f177d9c5b6873073ffba5d2778c853'
+SOCIAL_AUTH_FACEBOOK_KEY = '722062577974828'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'e8cc686acd95290729c5d7710f24f2f7'
 
 
 WSGI_APPLICATION = 'cdrive_fcp.wsgi.application'
