@@ -90,6 +90,19 @@ SOCIAL_AUTH_GITHUB_SECRET = 'abc7913b04f177d9c5b6873073ffba5d2778c853'
 SOCIAL_AUTH_FACEBOOK_KEY = '722062577974828'
 SOCIAL_AUTH_FACEBOOK_SECRET = 'e8cc686acd95290729c5d7710f24f2f7'
 
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email', # disabled by default
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'core.utils.pipeline.get_profile_from_provider', # custom
+)
 
 WSGI_APPLICATION = 'cdrive_fcp.wsgi.application'
 
