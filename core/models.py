@@ -7,8 +7,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .utils.const import UserConst
-from .utils.utils import PathUtils
+from cdrive_fcp.utils.const import UserConst
+from cdrive_fcp.utils.utils import PathUtils
+from game.models import Game
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -21,6 +22,23 @@ class UserProfile(models.Model):
 
     def spending_required(self):
         return 100 - self.accumulated_spending
+
+    def get_active_cart(self):
+        cart = Cart.objects.get(user_id=self.user.id, status=Cart.NOT_PAID)
+        return cart
+
+    def get_purchased_games(self):
+        games_id = CartGamePurchase.objects.filter(cart__user__id=self.user.id, cart__status=Cart.PAID).values_list('game', flat=True)
+        games = Game.objects.filter(pk__in=set(games_id))
+        return games
+
+    def get_purchase_history(self, ordered=True):
+        if ordered:
+            history = CartGamePurchase.objects.filter(cart__user__id=self.user.id, cart__status=Cart.PAID).order_by('-cart__payment__paid_date')
+        else:
+            history = CartGamePurchase.objects.filter(cart__user__id=self.user.id, cart__status=Cart.PAID)
+
+        return history
 
 @receiver(post_save, sender=User)
 def create_user_profile_and_cart(sender, instance, created, **kwargs):
@@ -40,6 +58,9 @@ class CardPayment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal(0.00))
     paid_date = models.DateField()
 
+    def __str__(self):
+        return "{} on {}".format(self.cart.user.username, self.paid_date)
+
 class Cart(models.Model):
     NOT_PAID = 'N'
     PROCESSING = 'PR'
@@ -55,6 +76,12 @@ class Cart(models.Model):
     payment = models.OneToOneField('CardPayment', on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
         
+    def __str__(self):
+        if self.status == PAID:
+            return "{} purchased on {}".format(self.game.title, self.payment.paid_date)
+        else:
+            return "{} in cart".format(self.game.title)
+
     def get_total(self):
         # TODO: count rewards
         return sum([game.price for game in self.game.all()])
@@ -65,6 +92,9 @@ class RewardsBatch(models.Model):
     expiration_date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{}: {} issued on {}".format(self.user.username, self.value, self.issue_date)
+
     def issue(self):
         self.issue_date = timezone.now()
         self.expiration_date = self.issue_date + timedelta(days=RewardsConst.EXPIRE_THRESHOLD)
@@ -74,3 +104,14 @@ class CartGamePurchase(models.Model):
     cart = models.ForeignKey('Cart')
     game = models.ForeignKey('game.Game')
     rewards = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        if self.cart.status == Cart.PAID:
+            return "{} purchased on {}".format(self.game.title, self.cart.payment.paid_date)
+        else:
+            return "{} in cart".format(self.game.title)
+
+
+
+
+

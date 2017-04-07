@@ -7,6 +7,7 @@ from collections import OrderedDict
 from .models import Game, Genre, Tag
 from core.models import Cart, CartGamePurchase
 from django.contrib.auth.models import User
+from cdrive_fcp.utils.utils import HelperUtils
 
 ##############################################################################
 #                                       test                                 #
@@ -21,7 +22,8 @@ def index(request):
 
 def homepage(request):
     genres = Genre.objects.all()
-    genre_groups = [genres[i:i+2] for i in range(0, len(genres), 2)]
+    genre_groups = HelperUtils.get_column_groups(genres)
+
     layers = {'Home': '#'}
 
     return render(request, 'game/homepage.html', {'genres': genre_groups, 'layers': layers})
@@ -38,7 +40,7 @@ class GenreDetailView(DetailView):
 
         # # get games, group by 2
         games = Game.objects.filter(genre_id=context['genre'].id)
-        context['games'] = [games[i:i+2] for i in range(0, len(games), 2)]
+        context['games'] = HelperUtils.get_column_groups(games)
 
         # form page_header dict
         layers = OrderedDict()
@@ -60,14 +62,6 @@ class GameDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(GameDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
-
-        # get user active cart
-        cart = Cart.objects.get(user_id=self.request.user.id)
-        context['cart'] = cart
-        
-        # get game tags
-        tags = Tag.objects.filter(game_id=context['game'].id)
-        context['tags'] = tags
 
         # form page_header dict
         layers = OrderedDict()
@@ -115,18 +109,15 @@ def add_tag(request, genre_id, game_id):
 
             # increment popularity
             else:
-                tag = Tag.objects.get(tag_name=req_tag_name)
+                tag = Tag.objects.get(tag_name=req_tag_name, game=tag_game)
                 tag.increment_popularity()
     
     # redirect to game page
     return redirect('game', genre_id=genre_id, pk=game_id)
 
 def add_to_cart(request, genre_id, game_id):
-    # game = Game.objects.get(id=game_id)
-    cart = Cart.objects.get(user_id=request.user.id)
+    cart = request.user.profile.get_active_cart()
     cg = CartGamePurchase(game_id=game_id, cart_id=cart.id)
-    # cart.game.add(game)
-    # cart.save()
     cg.save()
 
     return redirect('game', genre_id=genre_id, pk=game_id)

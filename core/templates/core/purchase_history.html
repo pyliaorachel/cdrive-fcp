@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Purchase History{% endblock %}
+{% block children_css %}<link rel="stylesheet" href="{% static 'css/purchase_history.css' %}">{% endblock %}
+
+{% block content %}
+
+<div id="purchase-history" class="container-fluid">
+	
+	<div id="purchase-history-info-header">	
+
+		{% include "includes/breadcrumb.html" with layers=layers %}
+
+		<div class="page-header">
+			<h3>My Purchase History</h3>
+		</div>
+	</div>
+
+
+	<div id="purchase-history-info" class="cart-game-panel">
+		{% for record in records %}
+			{% include 'includes/cart_game_panel.html' with game=record.game cart=record.cart show_purchase_date=True %}
+		{% endfor %}
+	</div>
+
+</div>
+
+{% endblock %}

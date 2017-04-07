@@ -11,7 +11,7 @@ import json
 
 from .models import UserProfile, Cart, RewardsBatch, CartGamePurchase
 from .forms import PaymentForm, RegisterForm, UserProfileForm, UserEmailForm
-from .utils.const import RewardsConst, UserConst
+from cdrive_fcp.utils.const import RewardsConst, UserConst
 
 from django.contrib import messages
 
@@ -114,9 +114,13 @@ def payment(request, cart_id):
             payment.paid_date = timezone.now()
             payment.save()
 
-            cart.card_payment = payment
+            # cart paid
+            cart.payment = payment
             cart.status = Cart.PAID
             cart.save()
+
+            # assign new empty cart to user
+            Cart.objects.create(user=request.user)
 
             return HttpResponse('OK')
 
@@ -131,8 +135,15 @@ def payment(request, cart_id):
 #                                     others                                 #
 ##############################################################################
 
-def view_purchase_history(request):
-    return render(request, 'core/index.html', {'data': {'action': 'view_purchase_history'}})
+def purchase_history(request):
+    records = request.user.profile.get_purchase_history()
+    
+    layers = OrderedDict()
+    layers['Home'] = reverse('homepage')
+    layers['Purchase History'] = '#'
+
+    return render(request, 'core/purchase_history.html', {'records': records, 'layers': layers})
+
 
 ##############################################################################
 #                                     actions                                #
