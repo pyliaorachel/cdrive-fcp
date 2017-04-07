@@ -2,7 +2,49 @@
 
 {% block content %}
 
-<p><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
-<p><a href="{% url 'password_change' %}">Change Password</a></p>
+<h2>Profile</h2>
+
+<p>
+	<img src="{{ request.user.profile.avatar_image.url }}" height="200" width="200"/><br/>
+	Username: {{ user.username }}<br/>
+	On Screen Name: {{ user.profile.on_screen_name }}<br/>
+	
+	Email:
+	{% if user.email %}
+		{{ user.email }}
+	{% else %}
+		Not Set Yet
+	{% endif %}<br/>
+
+	Accumulated Spending: {{ user.profile.accumulated_spending }}<br/>
+	Spending Required To Obtain Next Reward: {{ user.profile.spending_required }}<br/>
+</p>
+
+<p>
+	{% if rewards_batches %}
+		<table style="width:30%">
+		<tr>
+			<th>No. of Rewards</th>
+			<th>Issue Date</th>
+			<th>Expiration Date</th>
+		</tr>
+
+		{% for batch in rewards_batches %}
+		<tr>
+			<td>{{ batch.value }}</td>
+			<td>{{ batch.issue_date }}</td>
+			<td>{{ batch.expiration_date }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+		0 reward currently
+	{% endif %}
+</p>
+
+<p>
+	<a href="{% url 'edit_profile' %}">Edit Profile</a><br/>
+	<a href="{% url 'password_change' %}">Change Password</a>
+</p>
 
 {% endblock %}
