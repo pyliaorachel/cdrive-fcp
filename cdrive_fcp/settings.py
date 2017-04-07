@@ -101,7 +101,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details',
-    'core.utils.pipeline.get_avatar',
+    'cdrive_fcp.utils.pipeline.get_avatar',
 )
 
 
