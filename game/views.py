@@ -21,12 +21,38 @@ def index(request):
 ##############################################################################
 
 def homepage(request):
+    # genre
     genres = Genre.objects.all()
     genre_groups = HelperUtils.get_column_groups(genres)
-
+    
+    # recommendations
+    purchases = request.user.profile.get_purchase_history(ordered=True)
+    purchased_games = []
+    for purchase in purchases:
+        purchased_games.append(purchase.game)
+    target_num = min(3, len(purchases))
+    targets = []
+    sim_list = []
+    for i in range(target_num):
+        targets.append(purchases[i].game)
+    for target in targets:
+        sim_games = target.get_similar_games()
+        if(len(sim_games)>0):
+            while(len(sim_games)>0 and sim_games[0] not in purchased_games):
+                sim_games.pop(0)
+        if(len(sim_games)>0):     
+            sim_list.append(sim_games)
+    recommended_games = []
+    for i in sim_list:
+        if i not in recommended_games:
+            recommended_games.append(i)
+    #recommended_games = list(set(sim_list))
+        
+    
+    # layers
     layers = {'Home': '#'}
 
-    return render(request, 'game/homepage.html', {'genres': genre_groups, 'layers': layers})
+    return render(request, 'game/homepage.html', {'genres': genre_groups, 'recommendations': recommended_games, 'layers': layers})
 
 def view_genre(request, genre_id):
     return render(request, 'game/index.html', {'data': {'genre_id': genre_id, 'action': 'view_genre'}})
@@ -98,6 +124,7 @@ def remove_review(request, genre_id, game_id, review_id):
 def add_tag(request, genre_id, game_id):
     if request.method == 'POST':
         req_tag_name = request.POST.get('tag_name', None)
+        req_user = request.user
         
         if not req_tag_name == "":
             tag_name = text.slugify(req_tag_name)
@@ -107,11 +134,14 @@ def add_tag(request, genre_id, game_id):
             if not Tag.objects.filter(tag_name=tag_name, game=tag_game).exists():
                 tag = Tag(tag_name=tag_name, popularity=1, game=tag_game)
                 tag.save()
+                tag.users.add(req_user)
 
             # increment popularity
             else:
                 tag = Tag.objects.get(tag_name=tag_name, game=tag_game)
-                tag.increment_popularity()
+                if req_user not in tag.users.all():
+                    tag.users.add(req_user)
+                    tag.increment_popularity()
     
     # redirect to game page
     return redirect('game', genre_id=genre_id, pk=game_id)

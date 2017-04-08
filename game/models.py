@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 
+from operator import itemgetter, attrgetter
+
 from decimal import Decimal
 
 class Genre(models.Model):
@@ -19,7 +21,7 @@ class Game(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal(0.00))
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
     is_featured = models.BooleanField()
-    platform = models.ManyToManyField('Platform')
+    platforms = models.ManyToManyField('Platform')
     release_date = models.DateField()
         
     def __str__(self):
@@ -28,6 +30,27 @@ class Game(models.Model):
     def get_sorted_tags(self):
         tags = Tag.objects.filter(game_id=self.id).order_by('-popularity')
         return tags
+    
+    def get_similar_games(self):
+        tags = Tag.objects.filter(game_id=self.id).order_by('-popularity')
+        tag_names = []
+        for tag in tags:
+            tag_names.append(tag.tag_name)
+        games = Game.objects.all().order_by('-release_date')
+        similar_games = []
+        similarity = []
+        for game in games:
+            compare_tags = Tag.objects.filter(game_id=game.id)
+            compare_names = []
+            for tag in compare_tags:
+                compare_names.append(tag.tag_name)
+            sim = len(set(tag_names).intersection(compare_names))
+            similarity.append((game,sim))
+        sorted_similarity = sorted(similarity, key=itemgetter(1), reverse=True)
+        for tup in sorted_similarity:
+            similar_games.append(tup[0])
+        return similar_games
+            
     
     def add_to_genre(self, genre_id):
         return
@@ -49,6 +72,7 @@ class Tag(models.Model):
     tag_name = models.CharField(max_length=30)
     popularity = models.PositiveIntegerField()
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
+    users = models.ManyToManyField(User)
     
     def __str__(self):
         return self.tag_name

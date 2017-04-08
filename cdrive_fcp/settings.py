@@ -75,6 +75,9 @@ TEMPLATES = [
                 'social_django.context_processors.backends', 
                 'social_django.context_processors.login_redirect', 
             ],
+            'libraries': {
+                'filters': "cdrive_fcp.templatetags.filters",
+            },
         },
     },
 ]
