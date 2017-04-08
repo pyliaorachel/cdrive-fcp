@@ -52,8 +52,8 @@ def register(request):
 ##############################################################################
 
 def view_profile(request):
-	rewards_batches = RewardsBatch.objects.filter(user=request.user).filter(issue_date__gte=(timezone.now()-timedelta(days=RewardsConst.EXPIRE_THRESHOLD)))
-	return render(request, 'core/profile.html', {'rewards_batches': rewards_batches})
+    rewards_batches = RewardsBatch.objects.filter(user=request.user).filter(issue_date__gte=(timezone.now()-timedelta(days=RewardsConst.EXPIRE_THRESHOLD)))
+    return render(request, 'core/profile.html', {'rewards_batches': rewards_batches})
 
 def edit_profile(request):
     if request.method == 'POST':
