@@ -77,7 +77,7 @@ class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
         
     def __str__(self):
-        if self.status == PAID:
+        if self.status == 'Paid':
             return "{} purchased on {}".format(self.game.title, self.payment.paid_date)
         else:
             return "{} in cart".format(self.game.title)
@@ -110,8 +110,3 @@ class CartGamePurchase(models.Model):
             return "{} purchased on {}".format(self.game.title, self.cart.payment.paid_date)
         else:
             return "{} in cart".format(self.game.title)
-
-
-
-
-
