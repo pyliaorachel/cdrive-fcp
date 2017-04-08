@@ -113,8 +113,3 @@ class CartGamePurchase(models.Model):
             return "{}/ {} purchased on {}".format(self.cart.user.username, self.game.title, self.cart.payment.paid_date)
         else:
             return "{}/ {} in cart".format(self.cart.user.username, self.game.title)
-
-
-
-
-
