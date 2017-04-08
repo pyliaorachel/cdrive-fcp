@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from taggit.managers import TaggableManager
 
 from decimal import Decimal
 
@@ -20,6 +21,7 @@ class Game(models.Model):
     genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
     is_featured = models.BooleanField()
     platform = models.ManyToManyField('Platform')
+    tags = TaggableManager()
         
     def __str__(self):
         return self.title
