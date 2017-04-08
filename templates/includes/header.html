@@ -9,12 +9,23 @@
 		</div>
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			<form class="navbar-form navbar-left">
-				<div class="form-group">
-					<input type="text" class="form-control" placeholder="Search Tag">
+
+			<form class="navbar-form navbar-left" id="search-form">
+				<div class="input-group">
+					<input id="search-item" type="text" class="form-control" placeholder="Search Tag">
+
+					<div class="input-group-btn">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="search-toggle-btn">Tag <span class="caret"></span></button>
+						<ul class="dropdown-menu" id="search-dropdown">
+							<li><a href="#" search-target="{% url 'tagged_games' 'TAG_NAME' %}">Tag</a></li>
+							<li><a href="#" search-target="{% url 'tagged_games' 'TAG_NAME' %}">Platform</a></li>
+						</ul>
+						<button type="submit" class="btn btn-default">Submit</button>
+					</div>
+
 				</div>
-				<button type="submit" class="btn btn-default">Submit</button>
 			</form>
+
 			{% if user.is_authenticated %}
 				{% include "includes/header_profile.html" %}
 			{% else %}
@@ -23,6 +34,7 @@
 					<li><a href="{% url 'register' %}">Register</a></li>
 				</ul>
 			{% endif %}
+
 		</div>
 	</div>
 </nav>

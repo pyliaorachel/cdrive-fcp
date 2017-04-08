@@ -121,6 +121,11 @@ img.game-image {
 	margin-left: 5px;
 }
 
+#search-toggle-btn {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
 /* Game panel */
 
 .game-panel .game-image img {
