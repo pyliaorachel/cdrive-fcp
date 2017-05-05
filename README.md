@@ -58,7 +58,7 @@ Open the browser, go to `localhost:8000`.
 /password_reset
                /done
 /reset/done
-/oauth
+/oauth/
 /profile/:id                                            <- VIEW profile
             /edit                                       <- EDIT cart
 ```
